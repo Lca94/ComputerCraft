@@ -1,0 +1,169 @@
+Miner = {
+    
+    slotNum = 1,
+    yblocks = 2,
+    xblocks = 5,
+    currentxblock = 1,
+    currentyblock = 1,
+    startylevel = 63,
+    ylevel = 0,
+    turtle = nil,
+    
+    init = function (self, turtle)
+        self.turtle = turtle
+        if self.has_cover_up(self) then
+            
+            print("Hi, I'm Miner Turtle. Make sure I have cobblestone in slot 1! My current fuel level is ", self.turtle.getFuelLevel())
+            print("Enter how many blocks in front of me you would like to mine [5]")
+            self.xblocks = tonumber(read())
+            --print("Enter how many blocks to the right of me you would like to mine [6]")
+            --self.xblocks = tonumber(read())
+            print("Enter my current Y Level [64]")
+            self.startylevel = tonumber(read())
+            self.ylevel = self.startylevel
+            
+            return true
+        else 
+            return false
+        end
+		
+    end,
+    
+    has_item_space = function (self)
+        total_item_space = 0 
+        for i = 1, 16 do
+            total_item_space = total_item_space + self.turtle.getItemSpace(i)
+        end
+        
+        if (total_item_space > 0) then
+            return true
+        else
+            print("No more space in my inventory!")
+            return false
+        end
+    end,
+
+    has_cover_up = function (self)
+        if (self.turtle.getItemCount(self.slotNum) >= 1) then
+            return true
+        else
+            print("I need 1 item in slot 1 to cover up the hole!")
+            return false
+        end
+    end,
+
+    not_done_mining = function (self)
+        if not ((self.currentxblock == self.xblocks)) then
+            return true
+        else
+            return nil
+        end
+    end,
+
+    need_fuel = function (self)
+        if turtle.getFuelLevel() == 'unlimited' then
+            return false
+        end
+        if (self.startylevel - self.ylevel) >= turtle.getFuelLevel() then
+            print("Ylevel is ", self.ylevel, " fuel level is ", turtle.getFuelLevel())
+            return true
+        else 
+            return false
+        end
+    end,
+
+    mine = function (self)
+    
+        while self.turtle.detectDown() and self.has_item_space(self) do
+            
+            if not miner.need_fuel(miner) then
+                self.turtle.digDown()
+                if not self.goDown(self) then
+                    print("Can't go down anymore")
+                    break
+                end
+            else
+                print("I need fuel!")
+                break
+            end
+    
+        end
+        if self.goDown(self) then
+            self.mine(self)
+        else
+            self.finish(self)
+        end
+        
+    end,
+    
+    goDown = function (self)
+    
+        if self.turtle.down() then
+            self.ylevel = self.ylevel - 1
+            return true
+        else
+            print("Couldn't move down")
+            return false
+        end
+        
+    end,
+    
+    goUp = function (self)
+    
+        if self.turtle.up() then
+            self.ylevel = self.ylevel + 1
+            return true
+        else
+            print("Couldn't move up")
+            return false
+        end
+        
+    end,
+    
+    goToStart = function (self)
+    
+        while (self.ylevel < self.startylevel) do
+            self.goUp(self)
+        end
+        
+        while (self.ylevel > self.startylevel) do
+            self.goDown(self)
+        end
+       
+       print("I'm back at my starting point!")     
+    end,
+    
+    finish = function (self)
+        print("Going back up from ", self.ylevel)
+        self.goToStart(self)
+        self.coverUp(self)
+    end,
+    
+    coverUp = function (self)
+        self.turtle.select(1)
+        self.turtle.placeDown()
+    end
+        
+}
+
+miner = Miner
+if miner.init(miner, turtle) then
+
+    while miner.not_done_mining(miner) do
+    
+        if not miner.need_fuel(miner) then
+            miner.mine(miner)
+            if miner.turtle.forward() then
+                miner.currentxblock = miner.currentxblock + 1
+            else
+                print("Couldn't move forward")
+                break
+            end
+        else
+            print("I need fuel!")
+            miner.goToStart(miner)
+            break
+        end 
+    end
+    
+end
