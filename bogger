@@ -1,10 +1,30 @@
--- Bog Earth Maker
+-- Bog Earth Maker!
+
+-- A bog earth auto-crafter (requires a crafty turtle)
+
+
+-- Setup!
+
+-- Make sure a block is behind the turtle (for direction detection only the block in front should be clear)
+-- Put an empty bucket in slot 6
+-- Bogger expects a setup like this:
+--                [ output chest ]
+-- [ chest of dirt ] [ turtle ]  [ chest of sand ]
+--           [ infinite water supply ]
+
+-- [ 1-dirt ] [ 2-sand ]         [ 3-dirt ]  [ 4-empty ]
+-- [ 5-sand ] [ 6-water bucket ] [ 7-sand ]  [ 8-empty ]
+-- [ 9-dirt ] [ 10-sand ]        [ 11-dirt ] [ 12-empty ]
+-- 13-16 empty
 
 Bogger = {
     
     init = function (self, turtle)
+        self.waterSlot = 6
+        self.craftedSlot = 7
+        self.numNeeded = 4
         self.turtle = turtle
-        self.reset
+        self.reset(self)
         
 		return true
     end,
@@ -15,11 +35,106 @@ Bogger = {
         end
     end,
     
+    getOneItem = function (self, slot)
+        self.turtle.select(slot)
+        self.turtle.suck()
+        totalItems = self.turtle.getItemCount(slot)
+        if totalItems < self.numNeeded then
+            print("Need more stuff for slot " .. slot)
+            return false
+        end
+        numToDrop = totalItems-1
+        
+        print ("Total items " ..totalItems .. ". Will drop " .. numToDrop)
+        self.turtle.drop(numToDrop)
+        self.numNeeded = self.numNeeded - 1
+        
+        return true
+    end,
+    
+    refillSand = function (self)
+        self.reset(self)
+        self.turtle.turnLeft()
+        self.numNeeded = 4
+        
+        self.getOneItem(self, 2)
+        self.getOneItem(self, 5)
+        self.getOneItem(self, 7)
+        self.getOneItem(self, 10)
+
+        print("Done refilling sand.")
+        
+        return true
+    end,
+    
+    refillDirt = function (self)
+        self.reset(self)
+        self.turtle.turnRight()
+        self.numNeeded = 4
+        
+        self.getOneItem(self, 1)
+        self.getOneItem(self, 3)
+        self.getOneItem(self, 9)
+        self.getOneItem(self, 11)
+
+        print("Done refilling dirt.")
+        
+        return true
+    end,
+    
+    getWater = function (self)
+        self.reset(self)
+        self.turtle.select(self.waterSlot)
+        self.turtle.placeDown()
+    end,
+    
+    craftAndChuck = function (self)
+        self.reset(self)
+        if self.turtle.craft() then
+            self.turtle.select(self.craftedSlot)
+            self.turtle.dropUp()
+            return true
+        else
+            self.getRidOfItems(self)
+            return false
+        end
+    end,
+    
+    getRidOfItems = function (self)
+        self.turtle.select(self.waterSlot)
+        self.turtle.placeDown()
+        
+        for i=1,16 do
+           self.turtle.select(i)
+           if (i ~= self.waterSlot) then
+               self.turtle.dropUp()
+           end
+        end
+    end,
+    
+    craftBogEarth = function (self)
+        self.refillSand(self)
+        self.refillDirt(self)
+        self.getWater(self)
+        
+        if self.craftAndChuck(self) then
+            print("Crafted bog earth!")
+            return true
+        else
+            print("Couldn't craft bog earth :L")
+            return false
+        end
+    end,
+
 }
 
 bogger = Bogger
-if miner.init(bogger, turtle) then
+if bogger.init(bogger, turtle) then
     
-    print("Done!")
+    numCreated = 0
+    while bogger.craftBogEarth(bogger) do
+        numCreated = numCreated + 1
+    end
+    print("Crafted " .. numCreated .. " bog earth!")
      
 end
