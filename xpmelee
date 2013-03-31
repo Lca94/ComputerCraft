@@ -1,0 +1,25 @@
+xp = peripheral.wrap("right")
+xp.setAutoCollect(true)
+ 
+function enchant()
+        turtle.select(1)
+        turtle.suckDown()
+        turtle.dropDown(turtle.getItemCount(1)-1)
+        xp.enchant(30)
+        turtle.dropUp(1)
+end
+ 
+--MAIN--
+i = 0
+while true do
+		turtle.attack()
+        if xp.getLevels()>30 then
+                enchant()
+                print("enchanted book")
+        else
+                i = i + 1
+                print(i .. "-" .. xp.getLevels())
+        end
+ 
+        sleep (2)
+end

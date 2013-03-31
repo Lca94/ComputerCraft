@@ -1,0 +1,67 @@
+-- if other turtles are nearby they seem to pick up the stack of books :(
+
+xp = peripheral.wrap("right")
+enchantLevel = 30
+bookSlot = 1
+
+function kill()
+    for x=1,4 do 
+        turtle.attack() 
+    end
+end
+
+function getStuff()
+    turtle.suck()
+    turtle.suckUp()
+    turtle.turnRight()
+    turtle.suck()
+    turtle.turnLeft()
+    turtle.turnLeft()
+    turtle.suck()
+    turtle.turnRight()
+end
+
+-- drop chest sho
+uld be below turtle
+function dropInventory()
+    for y=1,16 do
+        turtle.select(y)
+        turtle.dropDown() 
+    end
+end
+
+function report()
+    lev = xp.getLevels()    
+    print("Current level: " .. lev)
+end
+
+-- book chest should be behind turtle
+function enchant()
+   if xp.getLevels() >= enchantLevel then
+       turtle.turnLeft()
+       turtle.turnLeft()
+       turtle.select(bookSlot)
+       turtle.dropDown()
+       turtle.suck()
+       totalBooks = turtle.getItemCount(bookSlot)
+       numBooks = totalBooks - 1
+       print("Total books: " .. totalBooks)
+       turtle.drop(numBooks)
+       xp.enchant(bookSlot, enchantLevel)
+       turtle.dropDown()
+       turtle.turnLeft()
+       turtle.turnLeft()
+   end 
+end
+
+while true do
+
+    kill()
+    xp.collect()
+    dropInventory()
+    enchant()
+    getStuff()
+    report()
+    sleep(2)
+    
+end

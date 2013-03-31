@@ -1,0 +1,25 @@
+-- Bog Earth Maker
+
+Bogger = {
+    
+    init = function (self, turtle)
+        self.turtle = turtle
+        self.reset
+        
+		return true
+    end,
+    
+    reset = function (self)
+        while self.turtle.detect() do
+            self.turtle.turnLeft()
+        end
+    end,
+    
+}
+
+bogger = Bogger
+if miner.init(bogger, turtle) then
+    
+    print("Done!")
+     
+end
