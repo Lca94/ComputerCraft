@@ -1,0 +1,35 @@
+function checkWater(direction)
+local result = false
+local slotNo = 0
+
+for i = 1, 16 do
+  if turtle.getItemCount(i) == 0 then
+   slotNo = i
+   break
+  end
+end
+if slotNo > 0 then
+  turtle.select(slotNo)
+  if direction == "down" then
+   if not turtle.detectDown() then
+    if not turtle.compareDown() then --no block detected, but does not compare to air(empty slot)
+         result = true
+    end
+   end
+  elseif direction == "up" then
+   if not turtle.detectUp() then
+    if not turtle.compareUp() then
+         result = true
+    end
+   end
+  elseif direction == "forward" then
+   if not turtle.detect() then
+    if not turtle.compare() then
+         result = true
+    end
+   end
+  end
+end
+
+return result --true if water, (or lava)
+end
