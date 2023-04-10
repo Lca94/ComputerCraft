@@ -92,22 +92,22 @@
 -- préprog pour faire un carré de X en zigzag avec turtle
 
 local function f()
-	turtle.forward()
-	digLavaUp()
+	print("turtle.forward()")
+	print("digLavaUp()")
 end
 
 local function b()
-	turtle.back()
+	print("turtle.back()")
 	-- normalement ne fera rien mais au cas où
-	digLavaUp()
+	print("digLavaUp()")
 end
 
 local function l()
-	turtle.turnLeft()
+	print("turtle.turnLeft()")
 end
 
 local function r()
-	turtle.turRight()
+	print("turtle.turRight()")
 end
 
 --
@@ -116,7 +116,7 @@ end
 --tArg => x
 local x=maxDistance
 
---phase forward 1er ligne
+--phase forw 1er ligne
 for i=1, x do
 	f()
 end
@@ -131,7 +131,7 @@ end
 -- zigzag x-1 fois
 local y=z-1
 for j=1, z do
-	--phase droite forward
+	--phase droite forw
 	if (math.mod(j,2) == 0) then
 		-- phase gauche car j pair
 		g()
