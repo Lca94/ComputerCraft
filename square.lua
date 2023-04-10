@@ -90,9 +90,17 @@
 	end
 
 -- préprog pour faire un carré de X en zigzag avec turtle
-
 local function f()
-	print("turtle.forward()")
+	turtle.select(myvar_CobbleBuff)
+	
+	-- check if for ok
+	if print("turtle.forward()") == false then
+		--Failed to move, see if we can dig our way forward
+		while print("turtle.dig()") do
+		--Keep digging till we can't dig any more, in case gravel is falling.
+		end
+	end
+	
 	print("digLavaUp()")
 end
 
